@@ -72,7 +72,7 @@ public class SceneController : MonoBehaviour
         }
     }
 
-    void EvaluatePair()
+    IEnumerator EvaluatePair()
     {
         if(card1.GetSprite() == card2.GetSprite())
         {
@@ -81,6 +81,7 @@ public class SceneController : MonoBehaviour
         }
         else
         {
+            yield return new WaitForSeconds(1f);
             Debug.Log("not a match");
             card1.SetFaceVisable(false);
             card2.SetFaceVisable(false);
@@ -101,7 +102,7 @@ public class SceneController : MonoBehaviour
             card2 = card;
             card2.SetFaceVisable(true);
 
-            EvaluatePair();
+           StartCoroutine(EvaluatePair());
         }
         Debug.Log(this + "CardClicked(): " + card.GetSprite());
     }
