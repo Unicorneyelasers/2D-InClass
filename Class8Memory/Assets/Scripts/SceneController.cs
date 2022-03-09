@@ -56,6 +56,7 @@ public class SceneController : MonoBehaviour
     void AssignImgesToCards()
     {
         List<int> imageIndices = new List<int>();
+        List<Card> shuffler = new List<Card>();
         for(int i=0; i < cardImages.Length; i++)
         {
             imageIndices.Add(i);
@@ -63,13 +64,23 @@ public class SceneController : MonoBehaviour
         }
 
         //To DO write code to shuffle the list of imageindices
-        
-
-        for(int i = 0; i < cards.Count; i++)
+        for (int i = 0; i < cards.Count; i++)
         {
+            int rand = Random.Range(0, cards.Count);
+            int temp = imageIndices[i];
+            imageIndices[i] = imageIndices[rand];
+            imageIndices[rand] = temp;
+
+        }
+
+
+        for (int i = 0; i < cards.Count; i++)
+        {
+            
             int imageIndex = imageIndices[i];
             cards[i].SetSprite(cardImages[imageIndex]);
         }
+        
     }
 
     IEnumerator EvaluatePair()
@@ -81,8 +92,12 @@ public class SceneController : MonoBehaviour
         }
         else
         {
+            float sawpTime = 1f;
             yield return new WaitForSeconds(1f);
             Debug.Log("not a match");
+            iTween.MoveTo(card1.gameObject, card2.transform.position, sawpTime);
+            iTween.MoveTo(card2.gameObject, card1.transform.position, sawpTime);
+            yield return new WaitForSeconds(sawpTime);
             card1.SetFaceVisable(false);
             card2.SetFaceVisable(false);
         }
@@ -92,17 +107,20 @@ public class SceneController : MonoBehaviour
 
     public void OnCardClicked(Card card)
     {
-        if (card1 == null)
+        if (!card.IsFaceViable())
         {
-            card1 = card;
-            card1.SetFaceVisable(true);
-        }
-        else if (card2 == null)
-        {
-            card2 = card;
-            card2.SetFaceVisable(true);
+            if (card1 == null)
+            {
+                card1 = card;
+                card1.SetFaceVisable(true);
+            }
+            else if (card2 == null)
+            {
+                card2 = card;
+                card2.SetFaceVisable(true);
 
-           StartCoroutine(EvaluatePair());
+                StartCoroutine(EvaluatePair());
+            }
         }
         Debug.Log(this + "CardClicked(): " + card.GetSprite());
     }
@@ -118,9 +136,23 @@ public class SceneController : MonoBehaviour
     }
 
 
-    // Update is called once per frame
-    void Update()
+   public void OnResetButtonPressed()
     {
-        
+        Debug.Log("reset");
+        Reset();
     }
+
+    private void Reset()
+    {
+        score = 0;
+        card1 = null;
+        card2 = null;
+
+        foreach(Card card in cards)
+        {
+            card.SetFaceVisable(false);
+        }
+        AssignImgesToCards();
+    }
+    
 }

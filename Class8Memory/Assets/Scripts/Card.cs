@@ -18,6 +18,10 @@ public class Card : MonoBehaviour
     {
         return spriteRenderer.sprite;
     }
+    public bool IsFaceViable()
+    {
+        return !cardBack.activeSelf;
+    }
     public void SetFaceVisable(bool faceVisible)
     {
         if (faceVisible)
